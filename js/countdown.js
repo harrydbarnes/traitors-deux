@@ -1,8 +1,10 @@
-// This file will contain all the countdown-related logic.
-
 function startCountdown() {
     const countdownElement = document.getElementById("countdown");
     if (countdownElement) {
+        if (window.countdownInterval) {
+            clearInterval(window.countdownInterval);
+        }
+
         const COUNTDOWN_TARGET_DATE = "March 26, 2025 11:00:00";
         const targetTime = new Date(COUNTDOWN_TARGET_DATE).getTime();
 
@@ -12,7 +14,7 @@ function startCountdown() {
 
             if (distance < 0) {
                 countdownElement.innerHTML = "The event has started!";
-                clearInterval(countdownInterval);
+                clearInterval(window.countdownInterval);
                 return;
             }
 
@@ -26,7 +28,6 @@ function startCountdown() {
 
         updateCountdown();
 
-        // Set up the interval to update the countdown
-        const countdownInterval = setInterval(updateCountdown, 1000);
+        window.countdownInterval = setInterval(updateCountdown, 1000);
     }
 }

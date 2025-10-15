@@ -1,67 +1,65 @@
-// This file will contain all the animation-related logic.
+const AppState = {
+    audioStarted: false,
+    inverted: false,
+    staticTransitionCount: 0,
+    ellipsisInterval: null,
+    crackInterval: null,
+};
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 // Function to handle sequential fade-in for initial page elements
-function startInitialFadeInSequence() {
+async function startInitialFadeInSequence() {
     const fadeElements = document.querySelectorAll('.fade-element');
     const fadeDelay = 600; // 600ms between each element
 
-    // Group the h2 and hr elements to fade in together
-    const h2Element = document.querySelector('h2.fade-element');
-    const hrElement = document.querySelector('hr.fade-element');
-
-    fadeElements.forEach((element, index) => {
-        setTimeout(() => {
-            element.style.transition = "opacity 1s ease-in-out";
-            element.style.opacity = "1";
-
-            // If this is the paragraph with bold elements, DON'T immediately start animating underlines
-            // We'll start that animation after the loading text appears
-        }, fadeDelay * index);
-    });
+    for (let i = 0; i < fadeElements.length; i++) {
+        const element = fadeElements[i];
+        await delay(fadeDelay);
+        element.style.transition = "opacity 1s ease-in-out";
+        element.style.opacity = "1";
+    }
 
     // Start animating underlines after the last element has faded in
-    const lastElementIndex = fadeElements.length - 1;
-    setTimeout(() => {
-        // Get the paragraph with bold elements
-        const paragraph = document.querySelector('.justified-text');
+    await delay(500);
+    const paragraph = document.querySelector('.justified-text');
+    if (paragraph) {
+        const boldElements = paragraph.querySelectorAll('strong');
+        const delay = 10000 / boldElements.length; // Distribute over 10 seconds
 
-        // Now start animating the underlines
-        if (paragraph) {
-            // First get all bold elements within this paragraph
-            const boldElements = paragraph.querySelectorAll('strong');
-            const delay = 10000 / boldElements.length; // Distribute over 10 seconds
-
-            boldElements.forEach((boldElement, boldIndex) => {
-                setTimeout(() => {
-                    boldElement.classList.add('highlight-active');
-                }, delay * boldIndex);
-            });
+        for (let i = 0; i < boldElements.length; i++) {
+            const boldElement = boldElements[i];
+            await delay(delay);
+            boldElement.classList.add('highlight-active');
         }
-    }, fadeDelay * (lastElementIndex + 1) + 500); // Add a bit extra delay
+    }
 }
 
 // Function to animate underlines for bold text elements one by one
-function animateUnderlines() {
+async function animateUnderlines() {
     const boldElements = document.querySelectorAll('strong');
-     const delay = 10000 / boldElements.length; // Distribute over 10 seconds
+    const delay = 10000 / boldElements.length; // Distribute over 10 seconds
 
-    boldElements.forEach((element, index) => {
-        setTimeout(() => {
-            element.classList.add('highlight-active');
-        }, delay * index);
-    });
+    for (let i = 0; i < boldElements.length; i++) {
+        const element = boldElements[i];
+        await delay(delay);
+        element.classList.add('highlight-active');
+    }
 }
 
 // Function to animate ellipsis
 function animateEllipsis(element) {
+    if (AppState.ellipsisInterval) {
+        clearInterval(AppState.ellipsisInterval);
+    }
+
     let count = 0;
-    const ellipsisInterval = setInterval(() => {
+    AppState.ellipsisInterval = setInterval(() => {
         count = (count + 1) % 4;
         element.textContent = '.'.repeat(count || 1);
     }, 500);
-
-    // Store interval ID to clear it later if needed
-    window.ellipsisInterval = ellipsisInterval;
 }
 
 const canvas = document.getElementById("crackCanvas");
@@ -74,15 +72,12 @@ if (canvas) {
     const cracks = [];
     const crackCount = 20;
     let opacity = 0;
-    let inverted = false;
     let mouseX = -1000; // Start off-screen
     let mouseY = -1000;
     let touchActive = false;
     let mouseInWindow = false;
-    let audioStarted = false;
     let mouseFollowingCracks = 0; // Track number of cracks following mouse
     let mouseFollowingTimes = {}; // Track how long each crack has been following mouse
-    let staticTransitionCount = 0; // Track number of static transitions
 
     // Track mouse position
     window.addEventListener('mousemove', (e) => {
@@ -195,7 +190,7 @@ if (canvas) {
 
             // Draw crack
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(${inverted ? "17, 27, 52" : "255, 255, 255"}, ${crack.opacity})`;
+            ctx.strokeStyle = `rgba(${AppState.inverted ? "17, 27, 52" : "255, 255, 255"}, ${crack.opacity})`;
             ctx.lineWidth = crack.size;
 
             if (crack.circlingMouse) {
@@ -316,13 +311,13 @@ if (canvas) {
             crack.currentLength = 0.72; // 20% longer initial length (from 0.6)
         });
 
-        if (!window.crackInterval) {
-            window.crackInterval = setInterval(drawCracks, 33); // ~30fps for smoother animation
+        if (!AppState.crackInterval) {
+            AppState.crackInterval = setInterval(drawCracks, 33); // ~30fps for smoother animation
         }
     }
 }
 
-function tvStaticTransition() {
+async function tvStaticTransition() {
     const staticOverlay = document.getElementById("static");
     if (staticOverlay) {
         staticOverlay.style.opacity = "1";
@@ -332,7 +327,7 @@ function tvStaticTransition() {
         fadeInAudio();
 
         // Increment static transition counter
-        staticTransitionCount++;
+        AppState.staticTransitionCount++;
 
         // Create image teaser element if it doesn't exist
         let keyImageElement = document.getElementById("keyImage");
@@ -362,7 +357,6 @@ function tvStaticTransition() {
             document.body.appendChild(keyImageElement);
         }
 
-        let flickerCount = 0;
         const maxFlickers = Math.floor(Math.random() * 6) + 5; // Random between 5-10 flickers
         const showKeyImageOnFlicker = Math.floor(Math.random() * maxFlickers);
 
@@ -375,60 +369,40 @@ function tvStaticTransition() {
                    heading2.style.opacity === '1';
         };
 
-        let flickerInterval = setInterval(() => {
-            flickerCount++;
-
-            // Decide whether to show static or key image for this flicker
-            if (flickerCount === showKeyImageOnFlicker) {
-                // Only show key image if full text has already appeared
+        for (let i = 0; i < maxFlickers; i++) {
+            if (i === showKeyImageOnFlicker) {
                 if (checkFullTextAppeared()) {
                     staticOverlay.style.opacity = "0";
                     keyImageElement.style.opacity = "1";
 
-                    // Keep the image on screen for .1 seconds longer
-                    setTimeout(() => {
-                        if (flickerCount < maxFlickers) {
-                            keyImageElement.style.opacity = "0";
-                            staticOverlay.style.opacity = "1";
-                        }
-                    }, 200); // 100ms (default) + 100ms (additional) = 200ms total
+                    await delay(200);
+
+                    if (i < maxFlickers -1) {
+                        keyImageElement.style.opacity = "0";
+                        staticOverlay.style.opacity = "1";
+                    }
                 }
             } else {
                 staticOverlay.style.opacity = staticOverlay.style.opacity === "1" ? "0" : "1";
                 keyImageElement.style.opacity = "0";
             }
+            await delay(100);
+        }
 
-            if (flickerCount >= maxFlickers) {
-                clearInterval(flickerInterval);
-                staticOverlay.style.opacity = "0";
-                keyImageElement.style.opacity = "0";
+        staticOverlay.style.opacity = "0";
+        keyImageElement.style.opacity = "0";
 
-                // After three static transitions, show the survey
-                if (staticTransitionCount >= 3) {
-                    showSurvey();
-                } else {
-                    showNotEverythingIsAsItSeems();
-                }
-            }
-        }, 100);
+        if (AppState.staticTransitionCount >= 3) {
+            showSurvey();
+        } else {
+            showNotEverythingIsAsItSeems();
+        }
     }
 }
 
 function startEllipsisAnimation() {
     const ellipsisElement = document.querySelector('.ellipsis');
-    if (!ellipsisElement) return;
-
-    // Clear any existing interval
-    if (window.ellipsisInterval) {
-        clearInterval(window.ellipsisInterval);
+    if (ellipsisElement) {
+        animateEllipsis(ellipsisElement);
     }
-
-    let count = 0;
-    const ellipsisInterval = setInterval(() => {
-        count = (count + 1) % 4;
-        ellipsisElement.textContent = '.'.repeat(count || 1);
-    }, 500);
-
-    // Store interval ID to clear it later if needed
-    window.ellipsisInterval = ellipsisInterval;
 }

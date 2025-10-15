@@ -10,7 +10,4 @@ const menuHtml = `
 </div>
 `;
 
-const scriptTag = document.currentScript;
-const menuContainer = document.createElement('div');
-menuContainer.innerHTML = menuHtml;
-scriptTag.parentNode.replaceChild(menuContainer.firstChild, scriptTag);
+document.getElementById('menu-placeholder').outerHTML = menuHtml;
