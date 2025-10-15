@@ -1,4 +1,4 @@
-document.write(`
+const menuHtml = `
 <div class="menu-bar">
     <a href="/cloakpixel/" id="home-link">Home</a>
     <a href="/cloakpixel/games" id="games-link">Games</a>
@@ -8,4 +8,9 @@ document.write(`
     <a href="/cloakpixel/journal" id="journal-link">Journal</a>
     <a href="/cloakpixel/credits" id="credits-link">Credits</a>
 </div>
-`);
+`;
+
+const scriptTag = document.currentScript;
+const menuContainer = document.createElement('div');
+menuContainer.innerHTML = menuHtml;
+scriptTag.parentNode.replaceChild(menuContainer.firstChild, scriptTag);

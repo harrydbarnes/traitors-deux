@@ -8,7 +8,306 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="css/credits.css">
+    <style>
+        @font-face {
+            font-family: 'YaroCut';
+            src: url('css/YaroCut.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'PathwayGothicOne';
+            src: url('css/PathwayGothicOneRegular-A9Xp.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'YaroCut', sans-serif;
+            background-color: #111b34;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 2s ease;
+        }
+
+        .menu-bar {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+            transition: opacity 2s ease;
+            opacity: 0;
+        }
+
+        .menu-bar:hover {
+            opacity: 1;
+        }
+
+        .menu-bar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .menu-bar a:hover {
+            color: #a0a0a0;
+            animation: wiggle 0.5s ease;
+        }
+
+        @keyframes wiggle {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(2deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-2deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        #muteButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 10px 15px;
+            cursor: pointer;
+            z-index: 100;
+            font-family: 'YaroCut', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        #muteButton:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .credits-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .game-title {
+            font-family: 'YaroCut', sans-serif;
+            text-align: center;
+            width: 80%;
+            max-width: 800px;
+            color: #ff8100;
+            font-size: 48px;
+            position: absolute;
+            line-height: 1.2;
+        }
+
+        .game-title span {
+            font-size: 36px;
+        }
+
+        .intro-credit {
+            font-family: 'PathwayGothicOne', sans-serif;
+            text-align: center;
+            width: 80%;
+            max-width: 800px;
+            color: white;
+            font-size: 36px;
+            opacity: 0;
+            position: absolute;
+            transition: opacity 0.5s ease;
+        }
+
+        .intro-credit .role {
+            font-size: 24px;
+            display: block;
+        }
+
+        .intro-credit .name {
+            font-size: 36px;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .credits-content {
+            font-family: 'PathwayGothicOne', sans-serif;
+            text-align: center;
+            width: 90%;
+            max-width: 1000px;
+            color: white;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        .credits-scroll {
+            transform: translateY(100vh);
+            animation: none;
+        }
+
+        @keyframes scrollCredits {
+            0% { transform: translateY(100vh); }
+            100% { transform: translateY(-300vh); }
+        }
+
+        .credits-content h2 {
+            font-size: 36px;
+            margin: 40px 0 10px;
+        }
+
+        .credits-content h3 {
+            font-size: 28px;
+            margin: 30px 0 20px;
+        }
+
+        .credits-content p {
+            font-size: 24px;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+
+        .credits-content .role {
+            font-size: 24px;
+            margin: 10px 0;
+            line-height: 1.4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .credits-content .cast-entry {
+            margin: 5px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .credits-content .cast-name {
+            text-align: right;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .credits-content .cast-separator {
+            display: inline-block;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .credits-content .cast-role {
+            text-align: left;
+            flex: 1;
+            padding-left: 10px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0;
+            gap: 40px;
+        }
+
+        .logo-container img {
+            max-width: 200px;
+            max-height: 100px;
+        }
+
+        .final-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 2s ease;
+            z-index: 1000;
+        }
+
+        #fadeOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 0;
+            z-index: 2000;
+            transition: opacity 2s ease;
+            pointer-events: none;
+        }
+
+        @media screen and (max-width: 768px) {
+            .menu-bar {
+                padding: 15px 0;
+                flex-wrap: wrap;
+            }
+
+            .menu-bar a {
+                margin: 5px 10px;
+                font-size: 16px;
+            }
+
+            .credits-content h2 {
+                font-size: 28px;
+            }
+
+            .credits-content h3 {
+                font-size: 24px;
+            }
+
+            .credits-content p {
+                font-size: 20px;
+            }
+
+            .credits-content .role {
+                font-size: 20px;
+            }
+
+            .logo-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .final-message {
+                font-size: 36px;
+            }
+
+            .game-title {
+                font-size: 40px;
+            }
+
+            .game-title span {
+                font-size: 28px;
+            }
+        }
+    </style>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJCJYMJ15J"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -18,7 +317,15 @@
     </script>
 </head>
 <body>
-    <script src="common/menu.js"></script>
+    <div class="menu-bar" id="menuBar">
+        <a href="/cloakpixel/" id="home-link">Home</a>
+        <a href="/cloakpixel/games" id="games-link">Games</a>
+        <a href="/cloakpixel/schedule" id="schedule-link">Schedule</a>
+        <a href="/cloakpixel/photo-wall" id="photo-wall-link">Photo Wall</a>
+        <a href="/cloakpixel/game-info" id="game-info-link">Game Info</a>
+        <a href="/cloakpixel/journal" id="journal-link">Journal</a>
+        <a href="/cloakpixel/credits" id="credits-link">Credits</a>
+    </div>
 
     <div class="content">
         <div class="credits-container" id="creditsContainer">
@@ -235,9 +542,149 @@
         <source src="Credit Music.mp3" type="audio/mp3">
     </audio>
 
-    <script src="js/animations.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/countdown.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const audio = document.getElementById('backgroundAudio');
+            const muteButton = document.getElementById('muteButton');
+            const body = document.body;
+            const creditsContainer = document.getElementById('creditsContainer');
+            const creditsContent = document.getElementById('creditsContent');
+            const finalMessage = document.getElementById('finalMessage');
+            const gameTitle = document.getElementById('gameTitle');
+            const thankYouMessage = document.getElementById('thankYouMessage');
+            const fadeOverlay = document.getElementById('fadeOverlay');
+            let isMuted = false;
+            const menuBar = document.getElementById('menuBar');
+            let hasInteracted = false;
+
+            // Intro credits elements
+            const introCredits = [
+                document.getElementById('director'),
+                document.getElementById('writer'),
+                document.getElementById('producer'),
+                document.getElementById('executive')
+            ];
+
+            // Fade in the credits container after page load
+            setTimeout(() => {
+                creditsContainer.style.opacity = '1';
+                body.style.backgroundColor = '#000000';
+
+                // Keep game title visible for 4 seconds before starting the sequence
+                setTimeout(() => {
+                    // Hide game title
+                    gameTitle.style.display = 'none';
+
+                    // Start the intro credits sequence
+                    showIntroCreditsSequentially(0);
+                }, 4000);
+            }, 1000);
+
+            // Function to show intro credits one by one
+            function showIntroCreditsSequentially(index) {
+                if (index >= introCredits.length) {
+                    // All intro credits have been shown, start the scrolling cast credits
+                    introCredits.forEach(credit => {
+                        credit.style.opacity = '0';
+                    });
+
+                    // Make the scrolling credits visible and start music
+                    setTimeout(() => {
+                        // Make the scrolling credits visible
+                        creditsContent.style.opacity = '1';
+
+                        // Start playing the credit music
+                        playBackgroundMusic();
+
+                        // Start the scrolling animation
+                        creditsContent.style.animation = 'scrollCredits 90s linear forwards';
+
+                        // Show "Claudio Will Return" 54 seconds after credits start (corrected from 72s)
+                        setTimeout(() => {
+                            finalMessage.style.opacity = '1';
+
+                            // Add fade to black and redirect after 2 more seconds
+                            setTimeout(() => {
+                                fadeOverlay.style.opacity = '1';
+
+                                // Redirect after fade completes
+                                setTimeout(() => {
+                                    window.location.href = 'https://claudio-wpp.github.io/cloakpixel/';
+                                }, 2000);
+                            }, 4000);
+                        }, 62000); // Corrected timing (18s earlier)
+                    }, 500);
+
+                    return;
+                }
+
+                // Show current credit
+                introCredits[index].style.opacity = '1';
+
+                // Wait 2 seconds, then fade out
+                setTimeout(() => {
+                    introCredits[index].style.opacity = '0';
+
+                    // After fade out, show next credit
+                    setTimeout(() => {
+                        showIntroCreditsSequentially(index + 1);
+                    }, 500); // 0.5s for fade out
+                }, 2000); // 2s display time
+            }
+
+            // Function to play background music
+            function playBackgroundMusic() {
+                if (!isMuted && hasInteracted) {
+                    audio.play().catch(e => {
+                        console.log("Audio playback failed:", e);
+                    });
+                }
+            }
+
+            // Handle audio initialization on user interaction
+            function initAudio() {
+                hasInteracted = true;
+                muteButton.textContent = 'Mute';
+
+                // If credits are already scrolling, play the music immediately
+                if (creditsContent.style.opacity === '1') {
+                    playBackgroundMusic();
+                }
+
+                // Remove event listeners after first interaction
+                document.removeEventListener('click', initAudio);
+                document.removeEventListener('touchstart', initAudio);
+            }
+
+            // Set up event listeners for user interaction to start audio
+            document.addEventListener('click', initAudio);
+            document.addEventListener('touchstart', initAudio);
+
+            // Mute/Unmute functionality
+            muteButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent triggering document click
+                isMuted = !isMuted;
+
+                if (isMuted) {
+                    audio.pause();
+                    muteButton.textContent = 'Unmute';
+                } else {
+                    if (creditsContent.style.opacity === '1') {
+                        audio.play();
+                    }
+                    muteButton.textContent = 'Mute';
+                }
+            });
+
+            // Show menu only when hovering over menu area
+            document.addEventListener('mousemove', function(e) {
+                if (e.clientY < 60) { // Only show if mouse is near top of screen
+                    menuBar.style.opacity = '1';
+                } else {
+                    menuBar.style.opacity = '0';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
