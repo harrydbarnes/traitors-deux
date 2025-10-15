@@ -54,15 +54,12 @@
     <source src="ThunderstormRain_BW.59774.mp3" type="audio/mpeg">
 </audio>
 
-    <script src="js/audio.js"></script>
     <script src="js/animations.js"></script>
+    <script src="js/page-audio.js"></script>
     <script>
  document.addEventListener("DOMContentLoaded", function() {
-  const audio = document.getElementById('backgroundAudio');
   const rainAudio = document.getElementById('rainAudio');
-  const muteButton = document.getElementById('muteButton');
   const photoGallery = document.getElementById('photoGallery');
-  let isMuted = false;
  
 
   const photos = [
@@ -206,62 +203,6 @@
   createPhotoGallery('all'); // Default to 'all' if no filter is stored
   animateStatusChanges();
   }
- 
-
-  muteButton.addEventListener('click', function() {
-  isMuted = !isMuted;
-  audio.muted = isMuted;
-  rainAudio.muted = isMuted;
-  muteButton.textContent = isMuted ? 'Unmute' : 'Mute';
- 
-
-  // If switching to mourning and unmuted, start rain
-  if (document.querySelector('.filter-toggle button.active').dataset.filter === 'mourning' && !isMuted) {
-  makeItRain();
-  document.body.classList.add('mourning-active');
-  fadeInRainAudio(); // Start the fade-in
-  }
-  });
- 
-
-  function initAudio() {
-  audio.volume = 0;
-  audio.play().then(() => {
-  muteButton.textContent = 'Mute';
-  let volume = 0;
-  const fadeInterval = setInterval(() => {
-  volume += 0.05;
-  if (volume >= 1) {
-  clearInterval(fadeInterval);
-  volume = 1;
-  }
-  audio.volume = volume;
-  }, 100);
- 
-
-  let storedFilter = localStorage.getItem('selectedFilter');
-  if (storedFilter === 'mourning') {
-  fadeOutAudio(audio, 3000, () => {
-  audio.pause();
-  rainAudio.volume = 0; // Start at 0 volume
-  rainAudio.play().catch(error => console.error("Rain audio play failed:", error));
-  makeItRain();
-  document.body.classList.add('mourning-active');
-  fadeInRainAudio(); // Start the fade-in
-  });
-  }
- 
-
-  }).catch((error) => {
-  console.log("Audio play failed:", error);
-  });
-  document.removeEventListener('click', initAudio);
-  document.removeEventListener('touchstart', initAudio);
-  }
- 
-
-  document.addEventListener('click', initAudio);
-  document.addEventListener('touchstart', initAudio);
  
 
   document.querySelectorAll('.filter-toggle button').forEach(button => {

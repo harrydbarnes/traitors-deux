@@ -1,18 +1,7 @@
-// This file will be the main entry point for the application's JavaScript.
 document.addEventListener("DOMContentLoaded", () => {
     document.body.style.transition = "background-color 1s ease-in-out";
     document.body.style.backgroundColor = "#111b34";
 
-    // Create audio element
-    const audioElement = document.createElement("audio");
-    audioElement.id = "backgroundAudio";
-    audioElement.src = "key-art-audio.wav";
-    audioElement.loop = true;
-    audioElement.volume = 0; // Start with volume at 0
-    audioElement.preload = "auto"; // Preload the audio
-    document.body.appendChild(audioElement);
-
-    // Hide countdown initially
     const countdownElement = document.getElementById("countdown");
     if (countdownElement) {
         countdownElement.style.opacity = "0";
@@ -82,9 +71,9 @@ function showSurvey() {
     }, 1000);
 }
 
-function showNotEverythingIsAsItSeems() {
+async function showNotEverythingIsAsItSeems() {
     document.body.style.backgroundColor = "white";
-    inverted = true; // Invert crack colors
+    AppState.inverted = true; // Invert crack colors
     document.body.style.color = "#001f3f";
 
     // Switch WPP logo from inverse to regular
@@ -147,39 +136,27 @@ function showNotEverythingIsAsItSeems() {
         // Start ellipsis animation for loading text
         startEllipsisAnimation();
     } else {
-        // First time showing, do sequential fade-in
-        // First line
-        setTimeout(() => {
-            heading1.style.opacity = '1';
+        await delay(500);
+        heading1.style.opacity = '1';
 
-            // Second line (after 3s - 1s fade + 2s gap)
-            setTimeout(() => {
-                heading2.style.opacity = '1';
+        await delay(2000);
+        heading2.style.opacity = '1';
 
-                // Third line (after 3s more)
-                setTimeout(() => {
-                    heading3.style.opacity = '1';
+        await delay(2000);
+        heading3.style.opacity = '1';
 
-                    // Loading text (after 3s more)
-                    setTimeout(() => {
-                        loadingText.style.opacity = '1';
-                        startEllipsisAnimation();
+        await delay(2000);
+        loadingText.style.opacity = '1';
+        startEllipsisAnimation();
 
-                        // Countdown (after 3s more)
-                        setTimeout(() => {
-                            countdownElement.style.opacity = '1';
-                        }, 2000);
-                    }, 2000);
-                }, 2000);
-            }, 2000);
-        }, 500);
+        await delay(2000);
+        countdownElement.style.opacity = '1';
 
-        // Mark that we've shown this screen
         window.notEverythingShown = true;
     }
 
     // Only schedule next transition if we haven't shown the survey yet
-    if (staticTransitionCount < 3) {
+    if (AppState.staticTransitionCount < 3) {
         let nextEffectTime = Math.floor(Math.random() * (8000 - 2000 + 1)) + 2000;
         setTimeout(() => {
             // Don't restart cracking, just ensure cracks are visible
