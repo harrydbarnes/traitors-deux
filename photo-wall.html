@@ -338,27 +338,33 @@
   const photoGallery = document.getElementById('photoGallery');
   let isMuted = false;
 
-  // Use helper to find mute button
-  function attachMuteListener() {
-        const btn = document.getElementById('muteButton');
-        if (btn) {
-             btn.addEventListener('click', function() {
-                isMuted = !isMuted;
-                // Audio.js handles backgroundAudio mute toggle.
-                // We handle rainAudio and logic.
-                rainAudio.muted = isMuted;
+  function handleMuteToggle(btn) {
+        btn.addEventListener('click', function() {
+            isMuted = !isMuted;
+            // Audio.js handles backgroundAudio mute toggle.
+            // We handle rainAudio and logic.
+            rainAudio.muted = isMuted;
 
-                if (document.querySelector('.filter-toggle button.active').dataset.filter === 'mourning' && !isMuted) {
-                    makeItRain();
-                    document.body.classList.add('mourning-active');
-                    fadeInRainAudio();
-                }
-             });
-        } else {
-            setTimeout(attachMuteListener, 100);
-        }
+            if (document.querySelector('.filter-toggle button.active').dataset.filter === 'mourning' && !isMuted) {
+                makeItRain();
+                document.body.classList.add('mourning-active');
+                fadeInRainAudio();
+            }
+        });
   }
-  attachMuteListener();
+
+  // Check if button already exists
+  const existingBtn = document.getElementById('muteButton');
+  if (existingBtn) {
+      handleMuteToggle(existingBtn);
+  } else {
+        // Listen for the custom event from audio.js
+        window.addEventListener('MuteButtonReady', (e) => {
+            if (e.detail && e.detail.button) {
+                handleMuteToggle(e.detail.button);
+            }
+        });
+  }
  
 
   const photos = [

@@ -15,6 +15,9 @@ const AudioController = {
             document.body.appendChild(muteButton);
         }
 
+        // Dispatch event that mute button is ready
+        window.dispatchEvent(new CustomEvent('MuteButtonReady', { detail: { button: muteButton } }));
+
         // If we are on credits page, the mute button logic is slightly different (pauses/plays instead of just muting sometimes?)
         // The original code in credits.html:
         // if (isMuted) { audio.pause(); ... } else { if(creditsVisible) audio.play(); ... }

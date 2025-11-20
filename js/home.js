@@ -279,32 +279,10 @@ const Home = {
 
         this.staticTransitionCount++;
 
-        let keyImageElement = document.getElementById("keyImage");
-        if (!keyImageElement) {
-            // Create key image element
-             keyImageElement = document.createElement("div");
-            keyImageElement.id = "keyImage";
-            keyImageElement.style.position = "fixed";
-            keyImageElement.style.top = "50%";
-            keyImageElement.style.left = "50%";
-            keyImageElement.style.transform = "translate(-50%, -50%)";
-            keyImageElement.style.height = "80vh";
-            keyImageElement.style.display = "flex";
-            keyImageElement.style.justifyContent = "center";
-            keyImageElement.style.alignItems = "center";
-            keyImageElement.style.backgroundColor = "black";
-            keyImageElement.style.zIndex = "20";
-            keyImageElement.style.opacity = "0";
-
-            const img = document.createElement("img");
-            img.src = "Key-Image-Art.jpeg";
-            img.style.height = "100%";
-            img.style.width = "auto";
-            img.style.maxWidth = "100%";
-            img.style.objectFit = "contain";
-
-            keyImageElement.appendChild(img);
-            document.body.appendChild(keyImageElement);
+        // Using existing image container element as requested by user
+        let keyImageElement = document.getElementById("imageContainer");
+        if (keyImageElement) {
+             keyImageElement.style.opacity = "0";
         }
 
         let flickerCount = 0;
@@ -317,22 +295,22 @@ const Home = {
             if (flickerCount === showKeyImageOnFlicker) {
                  // Simplified check logic
                  staticOverlay.style.opacity = "0";
-                 keyImageElement.style.opacity = "1";
+                 if (keyImageElement) keyImageElement.style.opacity = "1";
                  setTimeout(() => {
                      if (flickerCount < maxFlickers) {
-                         keyImageElement.style.opacity = "0";
+                         if (keyImageElement) keyImageElement.style.opacity = "0";
                          staticOverlay.style.opacity = "1";
                      }
                  }, 200);
             } else {
                 staticOverlay.style.opacity = staticOverlay.style.opacity === "1" ? "0" : "1";
-                keyImageElement.style.opacity = "0";
+                if (keyImageElement) keyImageElement.style.opacity = "0";
             }
 
             if (flickerCount >= maxFlickers) {
                 clearInterval(flickerInterval);
                 staticOverlay.style.opacity = "0";
-                keyImageElement.style.opacity = "0";
+                if (keyImageElement) keyImageElement.style.opacity = "0";
 
                 if (this.staticTransitionCount >= 3) {
                     this.showSurvey();

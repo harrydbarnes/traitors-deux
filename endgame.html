@@ -251,25 +251,29 @@ document.addEventListener("DOMContentLoaded", function() {
         infoBox.style.opacity = '1';
     }, 100);
 
-    // Hook into the Mute button which might be created by audio.js
-    function attachMuteListener() {
-        const btn = document.getElementById('muteButton');
-        if (btn) {
-             btn.addEventListener('click', function() {
-                isMuted = !isMuted;
-                // backgroundAudio is handled by audio.js
-                decisionAudio.muted = isMuted;
-                decidedAudio.muted = isMuted;
-                endAudio.muted = isMuted;
-                continueAudio.muted = isMuted;
-             });
-        } else {
-            // If not found yet, wait a bit
-            setTimeout(attachMuteListener, 100);
-        }
+    function handleMuteToggle(btn) {
+        btn.addEventListener('click', function() {
+            isMuted = !isMuted;
+            // backgroundAudio is handled by audio.js
+            decisionAudio.muted = isMuted;
+            decidedAudio.muted = isMuted;
+            endAudio.muted = isMuted;
+            continueAudio.muted = isMuted;
+        });
     }
-    attachMuteListener();
 
+    // Check if button already exists
+    const existingBtn = document.getElementById('muteButton');
+    if (existingBtn) {
+        handleMuteToggle(existingBtn);
+    } else {
+        // Listen for the custom event from audio.js
+        window.addEventListener('MuteButtonReady', (e) => {
+            if (e.detail && e.detail.button) {
+                handleMuteToggle(e.detail.button);
+            }
+        });
+    }
 
     // Ensure smooth audio loop
     function setupSmoothLoop(audioElement) {
